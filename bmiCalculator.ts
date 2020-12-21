@@ -22,7 +22,7 @@ const calculateBmi = (pituus: number, paino: number): string => {
     }
 }
 
-const parseArguments = (args: Array<string>): bmiValues => {
+const parseArguments = (args: Array<any>): bmiValues => {
     if (args.length < 4) throw new Error('Not enough arguments');
     if (args.length > 4) throw new Error('Too many arguments');
     let pituus = 0
@@ -50,3 +50,8 @@ try {
 } catch (e) {
     console.log("Error:", e.message)
 }
+
+export { 
+    calculateBmi,
+    parseArguments
+ }
