@@ -15,10 +15,10 @@ const getRandom = (min: number, max:number) => {
 };
 
 const calculateExercises = (taulukko: Array<number>, tavoite: number): olio => {
+    taulukko.shift();
     const reenipaivat = taulukko.filter(x => x > 0);
     const reeniAika = taulukko.reduce((a,b) =>  a + b, 0);
     const success = (reeniAika / taulukko.length) >= tavoite;
-
     return {
         periodLength: taulukko.length,
         trainingDays: reenipaivat.length,
@@ -35,7 +35,7 @@ const exerciseParser = (args: Array<string>): Array<number> => {
         throw new Error("Enemmän lukuja kiitos");
     } else {
         const palautettava = [];
-        for (let i = 3; i < args.length; i++) {
+        for (let i = 2; i < args.length; i++) {
             if (!isNaN(Number(args[i]))) {
                 palautettava.push(parseFloat(args[i]));
             } else {
@@ -46,9 +46,18 @@ const exerciseParser = (args: Array<string>): Array<number> => {
     }
 };
 
+const parseAndCalculate = (args: Array<string>): olio => {
+    const lista = exerciseParser(args);
+    return calculateExercises(lista, lista[0]);
+};
+
 try {
-    const tavoite = parseInt(process.argv[2]);
-    console.log(calculateExercises(exerciseParser(process.argv), tavoite)); 
+    console.log(parseAndCalculate(process.argv));
+
 } catch (e) {
     console.log("Error:", e.message);
 }
+
+export {
+    parseAndCalculate
+};
