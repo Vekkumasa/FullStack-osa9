@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import HealthIcon  from "../components/HealthRatingBar";
-import { Container, Icon, Segment } from "semantic-ui-react";
+import { Container, Icon, Segment, Button } from "semantic-ui-react";
 import { Patient, icon, Entry, HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from "../types";
 import { apiBaseUrl } from "../constants";
-import { useStateValue, setPatient } from "../state";
+import { useStateValue, setPatient, addEntry } from "../state";
 import { useParams } from "react-router-dom";
+import AddEntryModal from "../AddEntryModal/"
+import { HospitalEntryFormValues } from "../AddEntryModal/AddEntryForm";
 
 interface id {
     id: string;
@@ -14,7 +16,29 @@ interface id {
 const SinglePatient: React.FC = () => {
     const [ {patient}, dispatch] = useStateValue();
     const [ { diagnosis } ] = useStateValue();
+    const [ modalOpen, setModalOpen ] = React.useState<boolean>(false);
+    const [ error, setErrorMessage ] = React.useState<string | undefined>();
     const id = useParams<id>();
+
+    const openModal = (): void => {
+        setModalOpen(true);
+    }
+    const closeModal = (): void => {
+        setModalOpen(false);
+        setErrorMessage(undefined);
+    }
+
+    const submitNewEntry = async (values: HospitalEntryFormValues) => {
+        try {
+            const {data: newEntry} = await axios.post<Entry>(`${apiBaseUrl}/patients/${id.id}/entries`, values);
+            dispatch(addEntry(newEntry, id.id));
+            closeModal();
+        } catch (e) {
+            console.error(e.response.data);
+            setErrorMessage(e.response.data.error);
+        }
+        return null;
+    }
 
     const getPatient = async () => {
         try {
@@ -30,7 +54,7 @@ const SinglePatient: React.FC = () => {
             <Segment color="red" textAlign="left">
                 <h3> {entry.date} <Icon name="hospital" /></h3>
                 <p> {entry.description} </p>
-                <p> {entry.discharge.date}: {entry.discharge.criteria }</p>
+                <p> {entry.discharge?.date}: {entry.discharge?.criteria }</p>
             </Segment>
         )
     }
@@ -40,7 +64,8 @@ const SinglePatient: React.FC = () => {
             <Segment color="teal" textAlign="left">
                 <h3> {entry.date} <Icon name="stethoscope" /> {entry.employerName}</h3>
                 <p> {entry.description} </p>
-                <div> {entry.sickLeave? <p>Sickleave: {entry.sickLeave.startDate}-{entry.sickLeave.endDate}</p> :
+                <div> {entry.sickLeave? <p>Sickleave: {entry.sickLeave.startDate}-{entry.sickLeave.endDate}</p>
+                :
                 <p> Didn't require sickleave</p>} </div>
             </Segment>
         )
@@ -67,7 +92,7 @@ const SinglePatient: React.FC = () => {
     }
 
     const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
-        switch (entry.type) {
+        switch (entry.type) {            
             case "Hospital":
                 return <HospitalEntrySegment entry={entry} />
             
@@ -95,6 +120,9 @@ const SinglePatient: React.FC = () => {
                    <EntryDetails key={i} entry={e} />
                 ))}            
                 </div>
+                <br/>
+                <AddEntryModal onSubmit={submitNewEntry} onClose={closeModal} error={error} modalOpen={modalOpen} />
+                <Button onClick={() => openModal()}> Add a new entry </Button>
               </Container>
             </div>
         )

@@ -73,7 +73,7 @@ const parseSpecialist = (specialist: any): string => {
 }
 
 const parseCriteria = (criteria: any): string => {
-    if (!criteria ||isString(criteria)) {
+    if (!criteria || !isString(criteria)) {
         throw new Error(`Incorrect or missing criteria ` + criteria);
     }
     return criteria;
@@ -125,7 +125,8 @@ const parseHospital = (object: any): noIdHospitalEntry => {
         ...entry,
         type: object.type
     }
-    if (object.discharge) {
+    if (object.discharge.date !== '' || object.discharge.criteria !== '') {
+        console.log(object);
         return {...newHospitalEntry, discharge: {date: parseDate(object.discharge.date), criteria: parseCriteria(object.discharge.criteria)}};
     }
     return newHospitalEntry;

@@ -1,5 +1,5 @@
 import patientData from '../../data/patients'
-import { publicPatient, Patient, noSSN, noId, noIdOccupationalHealthCareEntry, noIdHospitalEntry, noIdHealthCheckEntry } from '../types' 
+import { publicPatient, Patient, noSSN, noId, noIdOccupationalHealthCareEntry, noIdHospitalEntry, noIdHealthCheckEntry, Entry } from '../types' 
 import { v4 as uuidv4 } from 'uuid';
 
 const patients: Array<Patient> = patientData as Array<Patient>;
@@ -32,14 +32,14 @@ const getNoSsnEntries = (): noSSN[] => {
     }));
 };
 
-const addEntry = (patientId: Patient['id'], entry: noIdHealthCheckEntry | noIdHospitalEntry | noIdOccupationalHealthCareEntry): Patient | any=> {
+const addEntry = (patientId: Patient['id'], entry: noIdHealthCheckEntry | noIdHospitalEntry | noIdOccupationalHealthCareEntry): Entry | any=> {
     const patient = patients.find(p => p.id === patientId);
     const newEntry = {
         ...entry,
         id: uuidv4()
     };
     patient?.entries.push(newEntry);
-    return patient;
+    return newEntry;
 };
 
 export default {
