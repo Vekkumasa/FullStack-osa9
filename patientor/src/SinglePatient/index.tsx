@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import HealthIcon  from "../components/HealthRatingBar";
-import { Container, Icon, Segment, Button } from "semantic-ui-react";
+import { Container, Icon, Segment, Button, Grid } from "semantic-ui-react";
 import { Patient, icon, Entry, HospitalEntry, OccupationalHealthcareEntry, HealthCheckEntry } from "../types";
 import { apiBaseUrl } from "../constants";
 import { useStateValue, setPatient, addEntry } from "../state";
@@ -18,6 +18,7 @@ const SinglePatient: React.FC = () => {
     const [ { diagnosis } ] = useStateValue();
     const [ modalOpen, setModalOpen ] = React.useState<boolean>(false);
     const [ error, setErrorMessage ] = React.useState<string | undefined>();
+    const [ type, setType ] = React.useState<Entry['type']>("Hospital");
     const id = useParams<id>();
 
     const openModal = (): void => {
@@ -28,7 +29,7 @@ const SinglePatient: React.FC = () => {
         setErrorMessage(undefined);
     }
 
-    const submitNewEntry = async (values: HospitalEntryFormValues) => {
+    const submitNewEntry = async (values: unknown) => {
         try {
             const {data: newEntry} = await axios.post<Entry>(`${apiBaseUrl}/patients/${id.id}/entries`, values);
             dispatch(addEntry(newEntry, id.id));
@@ -121,8 +122,19 @@ const SinglePatient: React.FC = () => {
                 ))}            
                 </div>
                 <br/>
-                <AddEntryModal onSubmit={submitNewEntry} onClose={closeModal} error={error} modalOpen={modalOpen} />
-                <Button onClick={() => openModal()}> Add a new entry </Button>
+                <AddEntryModal onSubmit={submitNewEntry} onClose={closeModal} error={error} modalOpen={modalOpen} type={type}/>
+                <Grid>
+                    <Grid.Column align="left" width={5}>
+                        <Button onClick={() => {setType("Hospital"); openModal()}}> Add a new Hospital entry </Button>
+                    </Grid.Column>
+                    <Grid.Column align="center" width={5}>
+                        <Button onClick={() => {setType("HealthCheck"); openModal()}}> Add a new HealthCheck entry </Button>
+                    </Grid.Column>
+                    <Grid.Column align="right" width={5}>
+                        <Button onClick={() => {setType("OccupationalHealthcare"); openModal()}}> Add a new OccupationalHealthcare entry </Button>
+                    </Grid.Column>
+                </Grid>
+                
               </Container>
             </div>
         )

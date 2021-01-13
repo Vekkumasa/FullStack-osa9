@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
-import { Diagnosis, Gender } from "../types";
+import { Diagnosis, Gender, Entry, HealthCheckRating } from "../types";
 
 // structure of a single option
 export type GenderOption = {
@@ -15,6 +15,31 @@ type SelectFieldProps = {
   label: string;
   options: GenderOption[];
 };
+
+export type HealthCheckOption = {
+  value: HealthCheckRating;
+  label: String;
+}
+
+type HealthCheckFieldProps = {
+  name: string;
+  label: string;
+  options: HealthCheckOption[];
+};
+
+
+export const HealthCheckSelectField: React.FC<HealthCheckFieldProps> = ({ name, label, options}: HealthCheckFieldProps) => (
+  <Form.Field>
+    <label>{label}</label>
+    <Field as="select" name={name} className="ui dropdown">
+      {options.map(option => (
+        <option key={option.value} value={option.value}>
+          {option.label || option.value}
+        </option>
+      ))}
+    </Field>
+  </Form.Field>
+);
 
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,

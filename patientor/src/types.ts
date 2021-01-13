@@ -46,7 +46,7 @@ export interface HospitalEntry extends BaseEntry {
   discharge: Discharge
 }
 
-interface sickLeave {
+export interface sickLeave {
     startDate: string,
     endDate: string
 }

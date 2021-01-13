@@ -1,4 +1,4 @@
-import { noId, Gender, Entry, HealthCheckRating, noIdOccupationalHealthCareEntry, noIdHospitalEntry, noIdHealthCheckEntry, noIdBaseEntry} from './types';
+import { noId, Gender, Entry, noIdOccupationalHealthCareEntry, noIdHospitalEntry, noIdHealthCheckEntry, noIdBaseEntry} from './types';
 
 const isString = (text: any): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -79,19 +79,6 @@ const parseCriteria = (criteria: any): string => {
     return criteria;
 }
 
-const isHealthCheckRating = (healthCheckRating: any): healthCheckRating is HealthCheckRating => {
-    return Object.values(HealthCheckRating).includes(healthCheckRating);
-};
-
-const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
-    
-    if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
-        console.log(healthCheckRating)
-        throw new Error(`Incorrect or missing healthCheckRating ` + healthCheckRating);
-    }
-    return healthCheckRating;
-}
-
 export const toNewPatientEntry = (object: any): noId => {
     return {
         name: parseName(object.name),
@@ -104,7 +91,7 @@ export const toNewPatientEntry = (object: any): noId => {
 };
 
 const parseEmployerName = (employer:any): string => {
-    if (!employer || isString(employer)) {
+    if (!employer || !isString(employer)) {
         throw new Error(`Incorrect or missing employer ` + employer);
     }
     return employer;
@@ -150,7 +137,7 @@ const parseHealthCheck = (object:any): noIdHealthCheckEntry => {
     const newHealthCheckEntry = {
         ...entry,
         type: object.type,
-        healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
+        healthCheckRating: object.healthCheckRating
     }
     return newHealthCheckEntry;
 }
